@@ -1,4 +1,4 @@
-$AlertPrice= 0.15
+$AlertPrice= 0.175
 $global:MAxAlerts=4
 $global:AlertCount=0
 
@@ -32,7 +32,29 @@ function Get-ObjectMember {
 
 function CheckFloorPrice() {
     #Get stats
-    $response = Invoke-RestMethod 'api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats' -Method 'GET' -Headers $headers
+   # $response = Invoke-RestMethod 'api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats' -Method 'GET' -Headers $headers
+
+
+    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+    $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+    $response = Invoke-WebRequest -UseBasicParsing -Uri "https://api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats" `
+    -WebSession $session `
+    -Headers @{
+    "authority"="api-mainnet.magiceden.io"
+      "method"="GET"
+      "path"="/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats"
+      "scheme"="https"
+      "accept"="application/json, text/plain, */*"
+      "accept-encoding"="gzip, deflate, br"
+      "accept-language"="en-US,en;q=0.7"
+      "if-none-match"="W/`"16e-Gp7RODMZsJ+E4F10szZWNX/XjO4`""
+      "origin"="https://magiceden.io"
+      "referer"="https://magiceden.io/"
+      "sec-fetch-dest"="empty"
+      "sec-fetch-mode"="cors"
+      "sec-fetch-site"="same-site"
+      "sec-gpc"="1"
+    }
 
     $response  | Get-ObjectMember | foreach {
                  if ($_.key -eq 'floorPrice') {
@@ -65,12 +87,28 @@ function FindCheapNFTs() {
     $NFTSBelowAlert=0
     $Limit = 20
     $cheapNFTsList = @{}
-    $URI = "api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20"
-    $response = Invoke-RestMethod $URI -Method 'GET' -Headers $headers
-        
-    $outputpath = "C:\temp\output.txt"
-#    [System.IO.File]::WriteAllLines($outputpath, $response) 
-     $response.items | out-file $outputpath
+    
+    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+    $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+    $response = Invoke-WebRequest -UseBasicParsing -Uri "https://api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20" `
+    -WebSession $session `
+    -Headers @{
+    "authority"="api-mainnet.magiceden.io"
+      "method"="GET"
+      "path"="/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20"
+      "scheme"="https"
+      "accept"="application/json, text/plain, */*"
+      "accept-encoding"="gzip, deflate, br"
+      "accept-language"="en-US,en;q=0.7"
+      "if-none-match"="W/`"139b2-RFn/OI//8t1rwdAYSVOtEuRcNvs`""
+      "origin"="https://magiceden.io"
+      "referer"="https://magiceden.io/"
+      "sec-fetch-dest"="empty"
+      "sec-fetch-mode"="cors"
+      "sec-fetch-site"="same-site"
+      "sec-gpc"="1"
+    }
+    
     $counter = 0
     foreach ($i in $response.items) {
         $i | Get-ObjectMember | foreach {
@@ -92,8 +130,6 @@ function FindCheapNFTs() {
     } else {$global:AlertCount=0}
 
 }
-
-
 
 $run = $true
 while ($run) {
