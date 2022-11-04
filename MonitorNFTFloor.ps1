@@ -32,8 +32,9 @@ function Get-ObjectMember {
 
 function CheckFloorPrice() {
     #Get stats
-   # $response = Invoke-RestMethod 'api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats' -Method 'GET' -Headers $headers
+   # $response = Invoke-RestMethod 'api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats' -Method 'GET' -Headers $headers
 
+                      
 
     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
     $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
@@ -90,7 +91,7 @@ function FindCheapNFTs() {
     
     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
     $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-    $response = Invoke-WebRequest -UseBasicParsing -Uri "https://api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20" `
+    $response = Invoke-WebRequest -UseBasicParsing -Uri "https://api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20" `
     -WebSession $session `
     -Headers @{
     "authority"="api-mainnet.magiceden.io"
