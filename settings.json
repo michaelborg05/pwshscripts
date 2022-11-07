@@ -1,0 +1,9 @@
+{
+	telegramtoken: "594185771:AAEGBNDncM3455gyutHlwjTlnPIdeRs0dYE",
+	telegramChatId: "-773724465",
+	MaxAlerts: 4,
+	alertPrice: 0.175,
+	statsApi: "api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats",
+	listApi: "api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20",
+	sleepTimer: 15
+}
