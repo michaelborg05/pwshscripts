@@ -2,7 +2,6 @@
 #$global:MAxAlerts=4
 $global:AlertCount=0
 $global:settingsObject = ""
-
 function Get-Settings {
     $global:settingsObject = Get-content -Path "config\settings.json" | ConvertFrom-Json 
     if ($global:settingsObject -eq $null ) {
@@ -35,8 +34,15 @@ function Get-ObjectMember {
         [PSCustomObject]$obj
     )
     $obj | Get-Member -MemberType NoteProperty | ForEach-Object {
-        $key = $_.Name
-        [PSCustomObject]@{Key = $key; Value = $obj."$key"}
+        if ($_.Name -eq "stats") {
+            $obj.stats | Get-Member -MemberType NoteProperty | ForEach-Object {
+                $key = $_.Name
+                [PSCustomObject]@{Key = $key; Value = $obj.stats."$key"}
+            }
+        } else { 
+            $key = $_.Name
+            [PSCustomObject]@{Key = $key; Value = $obj."$key"}
+        }
     }
 }
 
@@ -52,7 +58,7 @@ function CheckFloorPrice() {
     $response = Invoke-RestMethod $global:settingsObject.statsApi -Method 'GET' -Headers $headers
 
     $response  | Get-ObjectMember | foreach {
-                 if ($_.key -eq 'floorPrice') {
+                 if ($_.key -eq 'floorPrice' -or $_.key -eq 'floor_price') {
                     $floorPr = $_.value
                     }
                  if ($_.key -eq 'totalListedCount') {
@@ -60,12 +66,15 @@ function CheckFloorPrice() {
                     }
 
     }
-    write-host "Floor price before divide: $floorpr"
-    $floorPr = $Floorpr / 1000000000000000000
+
+    if ($Floorpr -gt 10000000000000) {
+        write-host "Floor price before divide: $floorpr"
+        $floorPr = $Floorpr / 1000000000000000000
+    } 
 
     if ($floorPr -le $global:settingsObject.alertPrice)
     {
-        $desc = "Hashverse Floor price: " + $floorPr
+        $desc = "$global:settingsObject.collection Floor price: " + $floorPr
         Send-Telegram $desc
 
     } else {$global:AlertCount=0}
@@ -117,7 +126,9 @@ while ($run) {
     write-host  $time
     
     CheckFloorPrice
-    FindCheapNFTs
+    if ($global:settingsObject.listApi -ne $null) {
+        FindCheapNFTs
+     }
 
     start-sleep $global:settingsObject.sleepTimer
 }
