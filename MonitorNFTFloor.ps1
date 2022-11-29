@@ -74,8 +74,11 @@ function CheckFloorPrice() {
 
     if ($floorPr -le $global:settingsObject.alertPrice)
     {
-        $desc = "$global:settingsObject.collection Floor price: " + $floorPr
+        $coll = $global:settingsObject.collection
+        write-host "collection name: " + $coll
+        $desc = $coll + " Floor price: " + $floorPr
         Send-Telegram $desc
+        write-host $desc
 
     } else {$global:AlertCount=0}
 
