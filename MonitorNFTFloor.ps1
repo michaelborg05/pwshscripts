@@ -4,7 +4,7 @@ $global:AlertCount=0
 $global:settingsObject = ""
 function Get-Settings {
     $global:settingsObject = Get-content -Path "config\settings.json" | ConvertFrom-Json 
-    if ($global:settingsObject -eq $null ) {
+    if ($global:settingsObject -eq $null -or $global:settingsobject -eq "" ) {
         write-host "unable to retrieve settings. Exiting return code 1" 
         Exit 1
         }
@@ -47,6 +47,7 @@ function Get-ObjectMember {
 }
 
 function CheckFloorPrice() {
+    Param([Parameter(Mandatory=$true)][object]$coll)
     #Get stats
    # $response = Invoke-RestMethod 'api-mainnet.magiceden.io/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats' -Method 'GET' -Headers $headers
 
@@ -55,35 +56,40 @@ function CheckFloorPrice() {
     $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
     
 #    $response = Invoke-RestMethod "api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats" -Method 'GET' -Headers $headers
-    $response = Invoke-RestMethod $global:settingsObject.statsApi -Method 'GET' -Headers $headers
+   
+    $response = Invoke-RestMethod $coll.statsApi -Method 'GET' -Headers $headers
 
     $response  | Get-ObjectMember | foreach {
                  if ($_.key -eq 'floorPrice' -or $_.key -eq 'floor_price') {
                     $floorPr = $_.value
                     }
-                 if ($_.key -eq 'totalListedCount') {
+                 if ($_.key -eq 'totalListedCount' -or $_.key -eq 'numListings') {
                     $listed = $_.value
                     }
 
     }
 
     if ($Floorpr -gt 10000000000000) {
-        write-host "Floor price before divide: $floorpr"
+        #write-host "Floor price before divide: $floorpr"
         $floorPr = $Floorpr / 1000000000000000000
     } 
 
-    if ($floorPr -le $global:settingsObject.alertPrice)
+    if ($coll.platform -eq "exchangeArt") {
+        $floorpr = $floorpr / 1000000000
+    }
+    
+    write-host "Collection: " $coll.collection "  Floor price: $Floorpr    - Total Listed: $listed - Total Coll" $Coll.totalcollection
+
+    if ($floorPr -le $coll.alertPrice)
     {
-        $coll = $global:settingsObject.collection
-        write-host "collection name: " + $coll
-        $desc = $coll + " Floor price: " + $floorPr
+        $desc = $coll.collection + " Floor price: " + $floorPr + " total NFTs: " + $coll.totalcollection + " Owned: " + $coll.owned
         Send-Telegram $desc
-        write-host $desc
 
     } else {$global:AlertCount=0}
 
-    write-host "Listed: $Listed"
-    write-host "Floor Price: " $floorPr
+
+    #write-host "Listed: $Listed"
+    #write-host "Floor Price: " $floorPr
 
 }
 
@@ -127,11 +133,21 @@ while ($run) {
     Get-Settings #check updated settings each loop
     $Time = Get-Date
     write-host  $time
-    
-    CheckFloorPrice
-    if ($global:settingsObject.listApi -ne $null) {
-        FindCheapNFTs
-     }
+        
+    foreach ($i in $global:settingsObject.collections) {
+        if ($i.statsApi -ne "") {
+            CheckFloorPrice $i
+            start-sleep 1
+        }
+        if ($i.ListApi -ne "") {
+            FindCheapNFTs
+        }
+    #    write-host $i.collection
+    }
+#    CheckFloorPrice
+#    if ($global:settingsObject.listApi -ne $null) {
+#        FindCheapNFTs
+#     }
 
     start-sleep $global:settingsObject.sleepTimer
 }
