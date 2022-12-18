@@ -2,11 +2,87 @@
 	"telegramtoken": "594185771:AAEGBNDncM3455gyutHlwjTlnPIdeRs0dYE",
 	"telegramChatId": "-773724465",
 	"MaxAlerts": 4,
-	"alertPrice": 0.175,
-	"collection": "The Bornless",
-	"statsApi": "https://api.opensea.io/api/v1/collection/the-bornless/stats",
-	
-	"statsApi_old": "api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/stats",
-	"listApi_old": "api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20",
-	"sleepTimer": 15
+	"sleepTimer": 15,
+	"collections": [
+		{
+			"collection": "The Bornless",
+			"platform": "opensea",
+			"statsApi": "https://api.opensea.io/api/v1/collection/the-bornless/stats",
+			"listApi": "",
+			"alertPrice": 0.15
+		},
+		{
+			"collection": "Nokiamon-Uta",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=7yxagD4okbB4qZx9zCHWsidr8gxK7wqoNhmxayyxrnaE&masterEditionPDA=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 0.8,
+			"TotalCollection" : 112
+
+		},
+		{
+			"collection": "Nokiamon-Tepos",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=3E9jf4fczYAWzZfMQowPLsdDoL6Hbk3BFDDhTCJDh98V&masterEditionPDA=F29PweBoWkgeuoLZYw7ditQeYLdVLRSd5n3kX9ifb9Bq",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 2,
+			"TotalCollection" : 88
+		},
+		{
+			"collection": "Nokiamon-Kaktees",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=EufNDKXtZTrLNRYrPNM1smXCRFR9iTF12tRE11UNvVeD&masterEditionPDA=AcbXWcqmwVepKkPcisq81Tr3ncjxBsNN2G9yZB1JASuW",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 0.6,
+			"TotalCollection" : 187
+		},
+		{
+			"collection": "Nokiamon-Henca",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=HrV9AVbojn1WAdVYkbbfz45qQaf6RWNM4atrPTavmN5D&masterEditionPDA=FNiSy1wT2PnZmMEHKPYwGn4XBMw1ykiDM7a5oqk2tdV7",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 0.6,
+			"TotalCollection" : 208
+
+		},
+		{
+			"collection": "Nokiamon-Bunta",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=DYSn1KtjRegF6U2heJWLedfkdtJG6B5Xvk1XHFDUyGeS&masterEditionPDA=B6MZRmj5mk9wEKujEu3L8UMCAE6QEEfST8fFsJwbABjb",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 0.48,
+			"TotalCollection" : 107,
+			"Owned": 1
+
+			},
+				{
+			"collection": "Nokiamon-Bakuryu",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=FnZGChBYkFYTcqviiXMbGtiueLJcWvuAi53mQxsuf3xA&masterEditionPDA=ETgJ4rxuPs12btPqd6RymxV6PMWWxYr9RPKfiaJZLEk6",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 5,
+			"TotalCollection" : 52
+			
+		},
+		{
+			"collection": "Nokiamon-Akiya",
+			"platform": "exchangeArt",
+			"statsApi": "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=CE8huV75RshdEwPvHA2x6v6E9hekzLou2nch7u98vgoT&masterEditionPDA=r6Guu5yijDinhwHaoruy2iZ1ctLDKbtV5ajxUesEkdL",
+			"listApi": "",
+			"listApi_old": "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=CV1oNs8NN9ZwESoEouwALTfHLkqGJVkNeuGdkkg5mvsr&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh",
+			"alertPrice": 0.5,
+			"TotalCollection" : 159,
+			"Owned": 2
+
+		}
+
+	]
 }
+
+
