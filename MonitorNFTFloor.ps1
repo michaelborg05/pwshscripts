@@ -98,7 +98,7 @@ function CheckFloorPrice() {
     write-host $name.PadLeft(25) "  Floor: $Floorpr    Alert: $alertPrice - Total Listed: $listed - Total Coll" $Coll.totalcollection
     IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "08:00") {
         $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`nTotal Listed: " + $listed + " Collection: " + $Coll.totalcollection + "`r`n"
-
+    }
     if ($floorPr -le $alertPrice)
     {
         $desc = $coll.collection + " Floor: " + $floorPr + " total NFTs: " + $coll.totalcollection 
