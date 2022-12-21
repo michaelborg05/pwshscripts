@@ -96,7 +96,7 @@ function CheckFloorPrice() {
 
     $name = $coll.collection
     write-host $name.PadLeft(25) "  Floor: $Floorpr    Alert: $alertPrice - Total Listed: $listed - Total Coll" $Coll.totalcollection
-    IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "08:00") {
+    IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "00:15") {
         $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`nTotal Listed: " + $listed + " Collection: " + $Coll.totalcollection + "`r`n"
     }
     if ($floorPr -le $alertPrice)
@@ -175,7 +175,7 @@ function IterateNFTs() {
     }
     write-host $Coll.Collection.PadLeft(25) "  Floor: $Floorpr    Alert: $alertPrice - Total Listed: " $Coll.numListings " - Total Coll" $Coll.totalcollection
     #If it is past 8am and report has not been run today yet, it will run and set indicator to true
-    IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "08:00") {
+    IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "00:15") {
         $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`nTotal Listed: " + $Coll.numListings + " Collection: " + $Coll.totalcollection + "`r`n"
 #        $global:DailyReport = $true
     }
@@ -247,13 +247,13 @@ while ($run) {
         start-sleep -Milliseconds 200
     }
     
-    IF ($global:DailyReport -eq $false -and $global:Time.TimeOfDay -ge "08:00") { 
+    IF ($global:DailyReport -eq $false -and $global:Time.TimeOfDay -ge "00:15") { 
         $global:DailyReport = $true
         Send-Telegram  $global:DailyReportText
     }
 
     #Once new day ticks over, reset param to false
-    IF ($global:DailyReport -eq $true -and $global:Time.TimeOfDay -lt "08:00") { 
+    IF ($global:DailyReport -eq $true -and $global:Time.TimeOfDay -lt "00:15") { 
         $global:DailyReport = $false
         $global:DailyReportText = ""
     }
