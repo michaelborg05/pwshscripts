@@ -177,11 +177,7 @@ function IterateNFTs() {
     #If it is past 8am and report has not been run today yet, it will run and set indicator to true
     IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "00:15") {
         $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`nTotal Listed: " + $Coll.numListings + " Collection: " + $Coll.totalcollection + "`r`n"
-#        $global:DailyReport = $true
     }
-    #Once new day ticks over, reset param to false
-#    IF ($global:DailyReport -eq $true -and $now.TimeOfDay -lt "08:00") { $global:DailyReport = $false}
-
 
     $text= ""
     if ($cheapNFTsList.Count -gt 0) {
@@ -246,11 +242,12 @@ while ($run) {
         }
         start-sleep -Milliseconds 200
     }
-    
+    write-host "Daily Report Status1: "  $global:DailyReport " Time: " $global:Time
     IF ($global:DailyReport -eq $false -and $global:Time.TimeOfDay -ge "00:15") { 
         $global:DailyReport = $true
         Send-Telegram  $global:DailyReportText
     }
+    write-host "Daily Report Status2: "  $global:DailyReport " Time: " $global:Time
 
     #Once new day ticks over, reset param to false
     IF ($global:DailyReport -eq $true -and $global:Time.TimeOfDay -lt "00:15") { 
