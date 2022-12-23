@@ -1,5 +1,6 @@
 #$global:AlertPrice= 0.175
 #$global:MAxAlerts=4
+$global:AlertTime=Get-Date "00:00"
 $global:AlertCount=0
 $global:settingsObject = ""
 $global:collections = @()
@@ -22,7 +23,11 @@ Function Send-Telegram {
     $Telegramchatid = $global:settingsObject.telegramChatId  #"-773724465"#NFTSniper
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $Response = Invoke-RestMethod -Uri "https://api.telegram.org/bot$($Telegramtoken)/sendMessage?chat_id=$($Telegramchatid)&text=$($Message)"
-    $global:AlertCount= $global:AlertCount + 1
+    if ((get-date) -lt $global:AlertTime.AddMinutes(2)) {
+        $global:AlertCount= $global:AlertCount + 1
+    }
+    #Set current date/time to Alerttime var
+    $global:AlertTime = Get-Date
     if ($global:AlertCount -ge $global:settingsObject.MaxAlerts) {
         $Message="3 alerts received in short time. Pausing script for 30mins"
         $Response = Invoke-RestMethod -Uri "https://api.telegram.org/bot$($Telegramtoken)/sendMessage?chat_id=$($Telegramchatid)&text=$($Message)"
@@ -104,7 +109,7 @@ function CheckFloorPrice() {
         $desc = $coll.collection + " Floor: " + $floorPr + " total NFTs: " + $coll.totalcollection 
         Send-Telegram $desc
 
-    } else {$global:AlertCount=0}
+    }
 
 
     #write-host "Listed: $Listed"
@@ -177,7 +182,10 @@ function IterateNFTs() {
     #If it is past 8am and report has not been run today yet, it will run and set indicator to true
     IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "00:15") {
         $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`nTotal Listed: " + $Coll.numListings + " Collection: " + $Coll.totalcollection + "`r`n"
+#        $global:DailyReport = $true
     }
+    #Once new day ticks over, reset param to false
+#    IF ($global:DailyReport -eq $true -and $now.TimeOfDay -lt "08:00") { $global:DailyReport = $false}
 
     $text= ""
     if ($cheapNFTsList.Count -gt 0) {
@@ -189,7 +197,8 @@ function IterateNFTs() {
             }
         }
         Send-Telegram $text
-    } else {$global:AlertCount=0}
+    } 
+
 
 }
 
@@ -242,17 +251,21 @@ while ($run) {
         }
         start-sleep -Milliseconds 200
     }
-    write-host "Daily Report Status1: "  $global:DailyReport " Time: " $global:Time
+    
     IF ($global:DailyReport -eq $false -and $global:Time.TimeOfDay -ge "00:15") { 
         $global:DailyReport = $true
         Send-Telegram  $global:DailyReportText
     }
-    write-host "Daily Report Status2: "  $global:DailyReport " Time: " $global:Time
 
     #Once new day ticks over, reset param to false
     IF ($global:DailyReport -eq $true -and $global:Time.TimeOfDay -lt "00:15") { 
         $global:DailyReport = $false
         $global:DailyReportText = ""
+    }
+
+    #if its been 10 mins since last alert and alert count is still not 0, set it to 0
+    if ($global:Alertcount -gt 0 -and (get-date) -gt $global:alerttime.AddMinutes(15)) {
+        $global:alertcount = 0
     }
 
     start-sleep $global:settingsObject.sleepTimer
