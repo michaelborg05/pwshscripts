@@ -221,7 +221,10 @@ function ExtractSeriesData() {
 
     #$response = $response | convertfrom-Json
     foreach ($coll in $response.contractGroups) {
-        $name = $coll.mint.symbol + " - " + $coll.mint.name
+        $collName =  $coll.mint.name
+        $collName = $collName.replace('&', 'and')
+        
+        $name = $coll.mint.symbol + " - " + $collName
 
         $statsURL = "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=" + $coll.mint.id + "&masterEditionPDA=" + $coll.mint.masterEditionAccountPDA
         $listURL =  "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=" + $coll.mint.masterEditionAccountPDA + "&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh"
