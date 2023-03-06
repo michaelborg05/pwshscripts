@@ -1,0 +1,44 @@
+{
+	"telegramtoken": "594185771:AAEGBNDncM3455gyutHlwjTlnPIdeRs0dYE",
+	"telegramChatId": "-773724465",
+	"MaxAlerts": 4,
+	"sleepTimer": 15,
+	"Coins": [
+		{
+			"CoinName"	: "BBAI",
+			"URL"		: "https://www.dextools.io/shared/data/pair?address=0x2894bf405b09815f1ba0b5b31554a985d722fc58&chain=ether&audit=true",
+			"Pair" 		: "0x2894bf405b09815f1ba0b5b31554a985d722fc58",
+			"alert"		: 0.05
+		},
+		{
+			"CoinName"	: "ATOS",
+			"URL"		: "https://www.dextools.io/shared/data/pair?address=0x8a6fc18e27338876810e1770f9158a1a271f90ab&chain=ether&audit=true",
+			"Pair" 		: "0x8a6fc18e27338876810e1770f9158a1a271f90ab",
+			"alert"		: 0.0035
+		},
+		{
+			"CoinName"	: "MPG",
+			"URL"		: "https://www.dextools.io/shared/data/pair?address=0x63a3a7aa1f968c4f443b35a2de43ef55268a4e32&chain=ether&audit=true",
+			"Pair" 		: "0x63a3a7aa1f968c4f443b35a2de43ef55268a4e32",
+			"alert"		: 0.00001
+		},
+		{
+			"CoinName"	: "NERF",
+			"URL"		: "https://www.dextools.io/shared/data/pair?address=0x8dc4b56ef4a2a1272f7e652bbdd3b6c3a84667c4&chain=ether&audit=true",
+			"Pair" 		: "0x8dc4b56ef4a2a1272f7e652bbdd3b6c3a84667c4",
+			"alert"		: 2
+		},
+		{
+			"CoinName"	: "IGLOO",
+			"URL"		: "https://www.dextools.io/shared/data/pair?address=0x77b5eb4a318ab5fe739b4550caef702d42a46a33&chain=ether&audit=true",
+			"Pair" 		: "0x77b5eb4a318ab5fe739b4550caef702d42a46a33",
+			"alert"		: 0.01
+		},
+		{
+			"CoinName"	: "EGGS",
+			"URL"		: "https://www.dextools.io/shared/data/pair?address=0xc54ba7aabe7164ca2aa092900060fe2ba6eccd8b&chain=ether&audit=true",
+			"Pair" 		: "0xc54ba7aabe7164ca2aa092900060fe2ba6eccd8b",
+			"alert"		: 0.000009
+		}
+	]
+}
