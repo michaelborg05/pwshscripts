@@ -1,6 +1,3 @@
-﻿
-#$global:AlertPrice= 0.175
-#$global:MAxAlerts=4
 $global:AlertTime=Get-Date "00:00"
 $global:AlertCount=0
 $global:settingsObject = ""
@@ -20,7 +17,6 @@ function Get-Settings {
 Function Send-Telegram {
     Param([Parameter(Mandatory=$true)][String]$Message)
     $Telegramtoken = $global:settingsObject.telegramToken
-    #$Telegramchatid = "416082917"
     $Telegramchatid = $global:settingsObject.telegramChatId  #"-773724465"#NFTSniper
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $Response = RestCall "https://api.telegram.org/bot$($Telegramtoken)/sendMessage?chat_id=$($Telegramchatid)&text=$($Message)"
@@ -60,9 +56,12 @@ function Get-ObjectMember {
 function CheckPrice() {
     Param([Parameter(Mandatory=$true)][object]$coin)
 
+    $URL = $global:settingsObject.DexToolAPI
+    $URL = $URL.replace("{addr}",$coin.Pair).Replace("{chain}",$coin.Chain)
+    
     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
     $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-    $response = RestCall $coin.URL 
+    $response = RestCall $URL 
     $price = [math]::round($response.data.price,8)
     $alertPr = $coin.alert
     
