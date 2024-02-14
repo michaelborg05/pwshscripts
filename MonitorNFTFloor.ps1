@@ -1,3 +1,5 @@
+#$global:AlertPrice= 0.175
+#$global:MAxAlerts=4
 $global:AlertTime=Get-Date "00:00"
 $global:AlertCount=0
 $global:settingsObject = ""
@@ -121,6 +123,7 @@ function IterateNFTs() {
     $Offset = 0
     $NFTSBelowAlert=0
     $Limit = 20
+    $AlertPrice = 0
     $cheapNFTsList = @{}
     foreach ($alrt in $global:settingsObject.Alerts) {
         if ($alrt.collection -eq $coll.collection) {
@@ -134,20 +137,22 @@ function IterateNFTs() {
     } 
 
     
-    $response = RestCall $coll.listApi 
+    $response = RestCall $coll.ListApi $coll.APIKey
 #    $response = Invoke-RestMethod "api-mainnet.magiceden.dev/v2/xc/collections/eth/0xb99e4e9b8fd99c2c90ad5382dbc6adfdfe3a33f3/orders?sort=askAmountNum&limit=20" -Method 'GET' -Headers $headers
-    if ($coll.platform.ToLower() -eq "exchangeart") {
-        $NFTS = $response.contractGroups
-    } Else {
-        $NFTS = $response.items
-    }
+    switch ($coll.platform.ToLower()) 
+    {
+        "exchangeart" {$NFTS = $response.contractGroups}
+        "opensea"     {$NFTS = $response.listings}
+        default       {$NFTS = $response.items}
+    } 
+
     $counter = 0
     $Floorpr = 0
-    foreach ($i in $NFTS) {
+    foreach ($NFT in $NFTS) {
         if ($coll.platform.ToLower() -eq "exchangeart") {
-            $listprice = $i.availablecontracts.listings.data.listingAmount / 1000000000
+            $listprice = $nft.availablecontracts.listings.data.listingAmount / 1000000000
 
-            #write-host "Price: " $listprice " Start: " $i.availablecontracts.listings.data.start
+            #write-host "Price: " $listprice " Start: " $nft.availablecontracts.listings.data.start
             
             #If floor price not set yet, set to current
             if ($Floorpr -eq 0) {$floorpr = $listprice}
@@ -160,14 +165,43 @@ function IterateNFTs() {
                 $UnixTimeStamp = [System.Math]::Truncate((Get-Date -Date $DateTime -UFormat %s))
 
                 #If current time greater than NFT buy now time AND list price is below alert price
-                if ($UnixTimeStamp -gt $i.availablecontracts.listings.data.start -and $listprice -lt $alertPrice ) {
+                if ($UnixTimeStamp -gt $nft.availablecontracts.listings.data.start -and $listprice -lt $alertPrice ) {
                     $NFTSBelowAlert= $NFTSBelowAlert + 1
                     $cheapNFTsList[$NFTSBelowAlert] = $listPrice
                     write-host $coll.Collection "Below Alert Price: " $listprice " - Raising alert"
                 }
             }
-        } else {
-            $i | Get-ObjectMember | foreach {
+        } 
+
+        if ($coll.platform.toLower() -eq "opensea") {
+            $dec = 1
+            [decimal]$decPlaces = ($nft.price.current.decimals)
+            for ($k=0; $k -lt $DecPLaces; $k++) {
+                $dec = $dec * 10
+            }
+            $price = ($nft.price.current.value/$dec)
+            #write-host $nft.protocol_data.parameters.offer.identifierOrCriteria " " $Price
+            if ($price -le $Floorpr -or $floorpr -eq 0) {$FloorPr = $price}          
+
+            if ($price -le $alertPrice) {
+                $NFTLookupAdd="https://api.opensea.io/api/v2/chain/" + $nft.chain + "/contract/" + $nft.protocol_data.parameters.offer.token + "/nfts/" + $nft.protocol_data.parameters.offer.IdentifierOrCriteria
+                
+                $response = RestCall $NFTLookupAdd $coll.APIKey
+
+                $response.nft.traits |  foreach {
+                    if ($_.trait_type -eq "Level") {
+                        $NFTSBelowAlert= $NFTSBelowAlert + 1
+                        if ($_.value -ge 15) {
+                            $cheapNFTsList[$NFTSBelowAlert] = "NFT " + $nft.protocol_data.parameters.offer.identifierOrCriteria + " - Level " + $_.value + " Price " + $Price
+                            write-host "NFT "  $nft.protocol_data.parameters.offer.identifierOrCriteria " - Level " $_.value " Price " $Price
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($coll.platform.toLower() -eq "aa") {
+            $nft | Get-ObjectMember | foreach {
                 if ($_.key -eq "askAmountNum" -and [decimal]$_.value -le $global:settingsObject.alertPrice) {
                    $NFTSBelowAlert= $NFTSBelowAlert + 1
                     $cheapNFTsList[$NFTSBelowAlert] = $_.value  
@@ -176,14 +210,11 @@ function IterateNFTs() {
              }    
         }
     }
-    write-host $Coll.Collection.PadLeft(25) "  Floor: $Floorpr    Alert: $alertPrice - Total Listed: " $Coll.numListings " - Total Coll" $Coll.totalcollection
+    write-host $Coll.Collection.PadLeft(21) "  Floor: $Floorpr    Alert: $alertPrice "
     #If it is past 8am and report has not been run today yet, it will run and set indicator to true
     IF ($global:DailyReport -eq $false -and $global:Time.timeofday -gt "00:15") {
-        $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`nTotal Listed: " + $Coll.numListings + " Collection: " + $Coll.totalcollection + "`r`n"
-#        $global:DailyReport = $true
+        $global:DailyReportText =  $global:DailyReportText + "`r`n" + $Coll.Collection + "`r`nFloor: " + $Floorpr  + " Alert: " + $alertPrice + "`r`n"
     }
-    #Once new day ticks over, reset param to false
-#    IF ($global:DailyReport -eq $true -and $now.TimeOfDay -lt "08:00") { $global:DailyReport = $false}
 
     $text= ""
     if ($cheapNFTsList.Count -gt 0) {
@@ -201,7 +232,13 @@ function IterateNFTs() {
 }
 
 function RestCall() {
-    Param([Parameter(Mandatory=$true)][string]$URI)
+    Param([Parameter(Mandatory=$true)][string]$URI, [string]$apiKey)
+    
+    if ($apikey -ne "") {
+        $headers = @{
+            'x-api-key' = $apikey
+        }
+    }
     try {
         Invoke-RestMethod $URI -Method 'GET' -Headers $headers -TimeoutSec 60
     }
@@ -221,10 +258,7 @@ function ExtractSeriesData() {
 
     #$response = $response | convertfrom-Json
     foreach ($coll in $response.contractGroups) {
-        $collName =  $coll.mint.name
-        $collName = $collName.replace('&', 'and')
-        
-        $name = $coll.mint.symbol + " - " + $collName
+        $name = $coll.mint.symbol + " - " + $coll.mint.name
 
         $statsURL = "https://api.exchange.art/v2/mints/editions/stats?masterEditionMintKey=" + $coll.mint.id + "&masterEditionPDA=" + $coll.mint.masterEditionAccountPDA
         $listURL =  "https://api.exchange.art/v2/mints/contracts?from=0&limit=10&filters%5BmasterEditionPDAs%5D=" + $coll.mint.masterEditionAccountPDA + "&filters%5BnftType%5D=editions&filters%5BcontractType%5D=buyNow&sort=price-lowToHigh"
@@ -252,9 +286,9 @@ while ($run) {
     $global:Time = Get-Date
     write-host  $global:Time
         
-    foreach ($a in $global:settingsObject.Series){
-        ExtractSeriesData $a
-    }
+#    foreach ($a in $global:settingsObject.Series){
+#        ExtractSeriesData $a
+#    }
     foreach ($i in $global:settingsObject.collections) {
         if ($i.QueryType.ToLower() -eq "statsapi") {
             CheckFloorPrice $i
